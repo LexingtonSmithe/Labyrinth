@@ -19,20 +19,53 @@ const game = new Phaser.Game(config);
 
 const gridSize = 10;
 const gridMap = generateGrid(gridSize);
+const textLog = [];
+var displayText = "You have found yourself in a Labyrinth of my design. You must battle your way out to find which monster has the key to your escape..."
 
+const currentEncounter = {
+  present: false,
+  data: {}
+};
+var encounterSprite;
+
+const player = {
+  health: 10,
+  maxHealth: 10,
+  healthPotions: 2,
+  hasKey: false
+}
 
 function preload ()
 {
+    // Basic
     this.load.image('background', './assets/background.png');
+    this.load.image('textBox', './assets/textBox.png');
     this.load.image('player', './assets/player.png');
-    this.load.image('enemy', './assets/enemy.png');
-    this.load.image('trap', './assets/trap.png');
-    this.load.image('loot', './assets/loot.png');
     this.load.image('door', './assets/door.png');
-    this.load.image('north button', './assets/northButton.png');
-    this.load.image('south button', './assets/southButton.png');
-    this.load.image('east button', './assets/eastButton.png');
-    this.load.image('west button', './assets/westButton.png');
+    // GUI
+    this.load.image('north button', './assets/buttonNorth.png');
+    this.load.image('south button', './assets/buttonSouth.png');
+    this.load.image('east button', './assets/buttonEast.png');
+    this.load.image('west button', './assets/buttonWest.png');
+    this.load.image('attack button', './assets/buttonAttack.png');
+    this.load.image('heal button', './assets/buttonHeal.png');
+    this.load.image('interact button', './assets/buttonInteract.png');
+    // Monsters
+    this.load.image('goblin', './assets/monsterGoblin.png');
+    this.load.image('skeleton', './assets/monsterSkeleton.png');
+    this.load.image('ooze', './assets/monsterSkeleton.png');
+    this.load.image('troll', './assets/monsterTroll.png');
+    // Traps
+    this.load.image('spikes', './assets/trapSpikes.png');
+    this.load.image('pit', './assets/trapPit.png');
+    this.load.image('arrows', './assets/trapArrows.png');
+    this.load.image('boulder', './assets/trapBoulder.png');
+    // Loot
+    this.load.image('coins', './assets/lootCoins.png');
+    this.load.image('ring', './assets/lootRing.png');
+    this.load.image('scepter', './assets/lootScepter.png');
+    this.load.image('crown', './assets/lootCrown.png');
+
 
 }
 
@@ -40,13 +73,16 @@ function create ()
 {
     // UI
     this.add.image(400, 300, 'background');
+    this.add.image(625, 500, 'textBox');
+    //this.input.setDefaultCursor('url(assets/input/cursors/blue.cur), pointer');
+
     // TODO - MAKE THE DOORS ONLY APPEAR WHEN THERE IS A ROOM IN THAT DIRECTION TO MOVE TO
     this.add.image(400, 64, 'door');
     this.add.image(400, 380, 'door');
     this.add.image(64, 220, 'door');
     this.add.image(736, 220, 'door');
     //PLACEHOLDER
-    // this.add.image(500, 220, 'player');
+    this.add.image(500, 220, 'player');
     // this.add.image(300, 220, 'enemy');
     //GUI
     const buttonNorth = this.add.sprite(150, 450, 'north button');
@@ -65,153 +101,42 @@ function create ()
     buttonWest.setInteractive();
     buttonWest.on('pointerdown', () => moveToRoom('west'), this);
 
+    const buttonAttack = this.add.image(275, 500, 'attack button');
+    buttonAttack.setInteractive();
+    buttonAttack.on('pointerdown', () => attackMonster(), this);
+
+    const buttonHeal = this.add.image(325, 500, 'heal button');
+    buttonHeal.setInteractive();
+    buttonHeal.on('pointerdown', () => drinkHealthPotion(), this);
+
+    const buttonInteract = this.add.image(375, 500, 'interact button');
+    buttonInteract.setInteractive();
+    buttonInteract.on('pointerdown', () => interactAction(), this);
     // SETUP THE GAME
 
     populateGrid(gridMap, gridSize);
 
+
+    this.textBox = this.add.text(485, 435, "Testing...", {fontFamily: '"Monospace"', fill: '#000000', wordWrap: { width : 280, useAdvancedWrap : true }});
     // TEMP TO SEE WHERE ON THE CANVAS THINGS ARE.
-    this.label = this.add.text(48, 48, '(x, y)', { fontFamily: '"Monospace"', fill: '#000000'});
+    //this.label = this.add.text(48, 48, '(x, y)', { fontFamily: '"Monospace"', fill: '#000000'});
+
     this.pointer = this.input.activePointer;
 
 }
 
 function update()
 {
-  this.label.setText('(' + this.pointer.x + ', ' + this.pointer.y + ')');
+  //this.label.setText('(' + this.pointer.x + ', ' + this.pointer.y + ')');
+  this.textBox.setText(displayText);
 
-}
-
-function moveToRoom(direction){
-  console.log("Attempting to move... " + direction);
-
-  let currentRoom = getActiveCell();
-  console.log("Checking we've cleared the current room... " + currentRoom.cleared);
-
-  if(currentRoom.cleared == true){
-    // Change Room
-    switch(direction){
-      case 'north':
-        if(checkGridBoundary(currentRoom.xpos, currentRoom.ypos - 1)){
-            updateActiveCell(currentRoom.xpos, currentRoom.ypos - 1);
-        } else{
-          // Display message to player that they cannot go that way
-        }
-      break;
-
-      case 'south':
-        if(checkGridBoundary(currentRoom.xpos, currentRoom.ypos + 1)){
-            updateActiveCell(currentRoom.xpos, currentRoom.ypos + 1);
-        } else{
-          // Display message to player that they cannot go that way
-        }
-      break;
-
-      case 'east':
-        if(checkGridBoundary(currentRoom.xpos + 1, currentRoom.ypos)){
-            updateActiveCell(currentRoom.xpos + 1, currentRoom.ypos);
-        } else{
-          // Display message to player that they cannot go that way
-        }
-      break;
-
-      case 'west':
-        if(checkGridBoundary(currentRoom.xpos - 1, currentRoom.ypos)){
-            updateActiveCell(currentRoom.xpos - 1, currentRoom.ypos);
-        } else{
-          // Display message to player that they cannot go that way
-        }
-      break;
-    }
-  } else {
-    // Display a message to the player on why they can't move
-    if(currentRoom.hasMonster == true){
-
-    }
-
-    if(currentRoom.hasTrap == true) {
-
-    }
-
+  if (encounterSprite && encounterSprite.destroy) {
+    encounterSprite.destroy();
   }
-}
-function updateActiveCell(xpos, ypos){
-  console.log("Attempting to update active cell")
-  let oldCell = getActiveCell();
-  gridMap[oldCell.xpos][oldCell.ypos].isActiveCell = false;
 
-  gridMap[xpos][ypos].isActiveCell = true;
+  if(currentEncounter.present){
+    console.log(currentEncounter);
+    encounterSprite = this.add.sprite(300, 220, currentEncounter.data.spriteKey);
+  }
 
-  // TODO: Below not required, just for testing
-  let newCell = getActiveCell();
-  console.log("Active Cell changed from: ["+ oldCell.xpos +"]["+ oldCell.ypos +"] ---> ["+ newCell.xpos +"]["+ newCell.ypos +"]")
-  if(newCell.hasMonster){
-    console.log("This room has a monster!");
-  }
-  if(newCell.hasTrap){
-    console.log("This room is booby trapped");
-  }
-  if(newCell.hasLoot){
-    console.log("This room has loot!");
-  }
-}
-
-function getActiveCell(){
-  for (let x = 0; x < gridSize; x++) {
-    for (let y = 0; y < gridSize; y++) {
-      let cell = gridMap[x][y];
-      if (cell.isActiveCell) {
-        return cell;
-      }
-    }
-  }
-}
-
-function checkGridBoundary(xposToCheck, yposToCheck){
-  console.log("Checking grid boundary");
-  if(xposToCheck < 0 || yposToCheck < 0 || xposToCheck >= gridSize || yposToCheck >= gridSize){
-    console.log("Player tried to move out of bounds")
-    return false;
-  } else {
-    console.log("All good");
-    return true;
-  }
-}
-
-function generateGrid(gridSize) {
-  // Generate an empty grid
-  let grid = [];
-  for (let x = 0; x < gridSize; x++) {
-    grid[x] = [];
-    for (let y = 0; y < gridSize; y++) {
-      grid[x][y] = {
-        xpos: x,
-        ypos: y,
-        isActiveCell: false,
-        hasMonster: false,
-        hasLoot: false,
-        hasTrap: false,
-        cleared: true
-      };
-    }
-  }
-  grid[0][0].isActiveCell = true;
-  return grid;
-}
-// Function to populate the grid with objects
-function populateGrid(grid, gridSize) {
-
-  for (let x = 0; x < gridSize; x++) {
-    for (let y = 0; y < gridSize; y++) {
-
-      // Randomly assign game items to the cell
-      let randomValue = Math.random();
-      if (randomValue < 0.33) {
-        gridMap[x][y].hasMonster = true; // 33% chance of having a monster
-      } else if (randomValue < 0.66) {
-        gridMap[x][y].hasLoot = true; // 33% chance of having loot
-      } else {
-        gridMap[x][y].hasTrap = true; // 34% chance of having a trap
-      }
-    }
-  }
 }
