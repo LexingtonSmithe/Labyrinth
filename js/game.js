@@ -20,7 +20,7 @@ const game = new Phaser.Game(config);
 const gridSize = 10;
 const gridMap = generateGrid(gridSize);
 const textLog = [];
-var healthBar;
+var healthBar, northDoor, southDoor, eastDoor, westDoor;
 var displayText = "You have found yourself in a Labyrinth of my design. You must battle your way out to find which monster has the key to your escape..."
 
 const currentEncounter = {
@@ -28,6 +28,7 @@ const currentEncounter = {
   data: {}
 };
 var encounterSprite;
+
 
 const player = {
   health: 10,
@@ -90,10 +91,14 @@ function create ()
 
     // TODO - MAKE THE DOORS ONLY APPEAR WHEN THERE IS A ROOM IN THAT DIRECTION TO MOVE TO
     // Placeholder
-    this.add.image(400, 64, 'door');
-    this.add.image(400, 380, 'door');
-    this.add.image(64, 220, 'door');
-    this.add.image(736, 220, 'door');
+    northDoor = this.add.image(400, 66, 'door');
+    southDoor = this.add.image(400, 383, 'door');
+	southDoor.setAngle(180);
+	eastDoor = this.add.image(734, 220, 'door');
+	eastDoor.setAngle(90);
+	westDoor = this.add.image(66, 220, 'door');
+	westDoor.setAngle(-90)
+
     this.add.image(500, 220, 'player');
 
     // Interactive UI
@@ -152,6 +157,14 @@ function update()
     encounterSprite = this.add.sprite(300, 220, currentEncounter.data.spriteKey);
   }
 
+  drawDoors()
+
   healthBar.scaleX = (player.health*10) / 100
+
+}
+
+
+function drawDoors() {
+	// TODO: Make it so the doors are only drawn when the player can move in that direction
 
 }
