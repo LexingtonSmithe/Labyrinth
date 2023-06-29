@@ -20,6 +20,7 @@ const game = new Phaser.Game(config);
 const gridSize = 10;
 const gridMap = generateGrid(gridSize);
 const textLog = [];
+var healthBar;
 var displayText = "You have found yourself in a Labyrinth of my design. You must battle your way out to find which monster has the key to your escape..."
 
 const currentEncounter = {
@@ -42,6 +43,8 @@ function preload ()
     this.load.image('textBox', './assets/textBox.png');
     this.load.image('player', './assets/player.png');
     this.load.image('door', './assets/door.png');
+    this.load.image('button', './assets/button.png');
+    this.load.image('health bar', './assets/healthbar.png');
     // GUI
     this.load.image('north button', './assets/buttonNorth.png');
     this.load.image('south button', './assets/buttonSouth.png');
@@ -71,20 +74,29 @@ function preload ()
 
 function create ()
 {
-    // UI
+    // Static UI
     this.add.image(400, 300, 'background');
     this.add.image(625, 500, 'textBox');
+    this.add.image(350, 550, 'health bar');
+
+    healthBar = this.add.graphics();
+    healthBar.fillStyle(0xe74c3c, 1);
+    healthBar.fillRect(0, 0, 192, 31);
+    healthBar.x = 254;
+    healthBar.y = 534;
+
+    //this.add.image(625, 500, 'button');
     //this.input.setDefaultCursor('url(assets/input/cursors/blue.cur), pointer');
 
     // TODO - MAKE THE DOORS ONLY APPEAR WHEN THERE IS A ROOM IN THAT DIRECTION TO MOVE TO
+    // Placeholder
     this.add.image(400, 64, 'door');
     this.add.image(400, 380, 'door');
     this.add.image(64, 220, 'door');
     this.add.image(736, 220, 'door');
-    //PLACEHOLDER
     this.add.image(500, 220, 'player');
-    // this.add.image(300, 220, 'enemy');
-    //GUI
+
+    // Interactive UI
     const buttonNorth = this.add.sprite(150, 450, 'north button');
     buttonNorth.setInteractive();
     buttonNorth.on('pointerdown', () => moveToRoom('north'), this);
@@ -119,7 +131,7 @@ function create ()
 
     this.textBox = this.add.text(485, 435, "Testing...", {fontFamily: '"Monospace"', fill: '#000000', wordWrap: { width : 280, useAdvancedWrap : true }});
     // TEMP TO SEE WHERE ON THE CANVAS THINGS ARE.
-    //this.label = this.add.text(48, 48, '(x, y)', { fontFamily: '"Monospace"', fill: '#000000'});
+    this.label = this.add.text(48, 48, '(x, y)', { fontFamily: '"Monospace"', fill: '#000000'});
 
     this.pointer = this.input.activePointer;
 
@@ -127,16 +139,19 @@ function create ()
 
 function update()
 {
-  //this.label.setText('(' + this.pointer.x + ', ' + this.pointer.y + ')');
+
+  this.label.setText('(' + this.pointer.x + ', ' + this.pointer.y + ')');
+
   this.textBox.setText(displayText);
 
   if (encounterSprite && encounterSprite.destroy) {
     encounterSprite.destroy();
   }
-
   if(currentEncounter.present){
     console.log(currentEncounter);
     encounterSprite = this.add.sprite(300, 220, currentEncounter.data.spriteKey);
   }
+
+  healthBar.scaleX = (player.health*10) / 100
 
 }
