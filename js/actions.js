@@ -1,4 +1,4 @@
-function moveToRoom(direction){
+function moveToRoom(direction, scene){
     console.log("Attempting to move... " + direction);
 
     let currentRoom = getActiveCell();
@@ -8,39 +8,39 @@ function moveToRoom(direction){
     // Change Room
         switch(direction){
 
-            case 'north':
+            case 'North':
                 if(checkGridBoundary(currentRoom.xpos, currentRoom.ypos - 1)){
-
                     updateTextLog("You venture North...");
-                    updateActiveCell(currentRoom.xpos, currentRoom.ypos - 1);
-
+                    fadeOutIn(scene).then(()=>{
+                        updateActiveCell(currentRoom.xpos, currentRoom.ypos - 1);
+                    })
                 }
             break;
 
-            case 'south':
+            case 'South':
                 if(checkGridBoundary(currentRoom.xpos, currentRoom.ypos + 1)){
-
                     updateTextLog("You venture South...");
-                    updateActiveCell(currentRoom.xpos, currentRoom.ypos + 1);
-
+                    fadeOutIn(scene).then(()=>{
+                        updateActiveCell(currentRoom.xpos, currentRoom.ypos + 1);
+                    })
                 }
             break;
 
-            case 'east':
+            case 'East':
                 if(checkGridBoundary(currentRoom.xpos + 1, currentRoom.ypos)){
-
                     updateTextLog("You venture East...");
-                    updateActiveCell(currentRoom.xpos + 1, currentRoom.ypos);
-
+                    fadeOutIn(scene).then(()=>{
+                        updateActiveCell(currentRoom.xpos + 1, currentRoom.ypos);
+                    })
                 }
             break;
 
-            case 'west':
+            case 'West':
                 if(checkGridBoundary(currentRoom.xpos - 1, currentRoom.ypos)){
-
                     updateTextLog("You venture West...");
-                    updateActiveCell(currentRoom.xpos - 1, currentRoom.ypos);
-
+                    fadeOutIn(scene).then(()=>{
+                        updateActiveCell(currentRoom.xpos - 1, currentRoom.ypos);
+                    })
                 }
             break;
 
@@ -64,6 +64,10 @@ function updateActiveCell(xpos, ypos){
     gridMap[xpos][ypos].isActiveCell = true;
     console.log("Active Cell changed from: ["+ oldCell.xpos +"]["+ oldCell.ypos +"] ---> ["+ xpos +"]["+ ypos +"]");
     checkNewActiveCell();
+
+}
+
+function moveRooms(){
 
 }
 
@@ -270,7 +274,7 @@ function interactAction(){
         if(room.cleared){
 
             updateTextLog("You make your way up the ladder to freedom");
-            updateTextLog("You found " + calculateLootValue() + "gp worth of loot");
+            updateTextLog("You found " + calculatePlayerLootValue() + "gp worth of loot");
 
         }
 
@@ -325,7 +329,7 @@ function chooseLoot(){
 
 }
 
-function calculateLootValue(){
+function calculatePlayerLootValue(){
 
     let totalValue = 0;
 

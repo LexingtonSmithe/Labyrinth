@@ -36,10 +36,10 @@ const player = {
 var healthBar
 var displayText = "You have been thrown into the Labyrinth. You must battle your way through, find which monster has the key to your escape..."
 var encounterSprite;
+var roomChange = true;
+var fadeOverlay;
 var northDoor, southDoor, eastDoor, westDoor;
 var totalMonsters;
-
-
 
 
 function preload ()
@@ -82,122 +82,52 @@ function preload ()
 
 function create ()
 {
-    // Static UI
-    this.add.image(400, 300, 'background');
-    this.add.image(625, 500, 'textBox');
-    this.add.image(350, 550, 'health bar');
-
-    healthBar = this.add.graphics();
-    healthBar.fillStyle(0xe74c3c, 1);
-    healthBar.fillRect(0, 0, 192, 31);
-    healthBar.x = 254;
-    healthBar.y = 534;
-
-    //this.add.image(625, 500, 'button');
-    //this.input.setDefaultCursor('url(assets/input/cursors/blue.cur), pointer');
-
-    this.add.image(500, 220, 'player');
-
-    // Interactive UI
-    const buttonNorth = this.add.sprite(150, 450, 'north button');
-    buttonNorth.setInteractive();
-    buttonNorth.on('pointerdown', () => moveToRoom('north'), this);
-
-    const buttonSouth = this.add.image(150, 550, 'south button');
-    buttonSouth.setInteractive();
-    buttonSouth.on('pointerdown', () => moveToRoom('south'), this);
-
-    const buttonEast = this.add.image(175, 500, 'east button');
-    buttonEast.setInteractive();
-    buttonEast.on('pointerdown', () => moveToRoom('east'), this);
-
-    const buttonWest = this.add.image(125, 500, 'west button');
-    buttonWest.setInteractive();
-    buttonWest.on('pointerdown', () => moveToRoom('west'), this);
-
-    const buttonAttack = this.add.image(275, 500, 'attack button');
-    buttonAttack.setInteractive();
-    buttonAttack.on('pointerdown', () => attackMonster(), this);
-
-    const buttonHeal = this.add.image(325, 500, 'heal button');
-    buttonHeal.setInteractive();
-    buttonHeal.on('pointerdown', () => drinkHealthPotion(), this);
-
-    const buttonInteract = this.add.image(375, 500, 'interact button');
-    buttonInteract.setInteractive();
-    buttonInteract.on('pointerdown', () => interactAction(), this);
     // SETUP THE GAME
 
     populateGrid(gridMap, gridSize);
     totalMonsters = getNumberOfMonstersRemaining();
 
-
+    // Static assets
+    this.add.image(400, 300, 'background');
+    this.add.image(625, 500, 'textBox');
+    this.add.image(350, 550, 'health bar');
+    this.add.image(500, 220, 'player');
     this.textBox = this.add.text(485, 435, "Testing...", {fontFamily: '"Monospace"', fill: '#000000', wordWrap: { width : 280, useAdvancedWrap : true }});
-    // TEMP TO SEE WHERE ON THE CANVAS THINGS ARE.
-    this.label = this.add.text(48, 48, '(x, y)', { fontFamily: '"Monospace"', fill: '#000000'});
 
-    this.pointer = this.input.activePointer;
+    fadeOverlay = this.add.graphics();
+    fadeOverlay.fillStyle(0x000000, 1); // Set the color and opacity of the overlay
+    fadeOverlay.fillRect(0, 0, game.config.width, game.config.height); // Fill the entire screen
+    fadeOverlay.setDepth(999); // Ensure the overlay is rendered on top of other elements
+    fadeOverlay.alpha = 0;
+
+    // Dynamic UI
+    buttonSetup(this);
+    healthBarSetup(this);
+
+
+
+
+    // TEMP TO SEE WHERE ON THE CANVAS THINGS ARE.
+    // this.label = this.add.text(48, 48, '(x, y)', { fontFamily: '"Monospace"', fill: '#000000'});
+    // this.pointer = this.input.activePointer;
 
 }
 
 function update()
 {
 
-    this.label.setText('(' + this.pointer.x + ', ' + this.pointer.y + ')');
+    //this.label.setText('(' + this.pointer.x + ', ' + this.pointer.y + ')');
 
     this.textBox.setText(displayText);
+    healthBar.scaleX = (player.health / player.maxHealth);
 
     if (encounterSprite && encounterSprite.destroy) {
         encounterSprite.destroy();
     }
     if(currentEncounter.present){
-        console.log(currentEncounter);
         encounterSprite = this.add.sprite(300, 220, currentEncounter.data.spriteKey);
     }
 
     drawDoors(this);
 
-    healthBar.scaleX = (player.health / player.maxHealth);
-
-}
-
-
-function drawDoors(scene) {
-  // TODO: Make it so the doors are only drawn when the player can move in that direction
-    let paths = checkForPaths();
-    console.log(paths);
-    // NORTH
-    if (northDoor && northDoor.destroy) {
-        northDoor.destroy();
-    }
-    if (paths.north) {
-        northDoor = scene.add.sprite(400, 66, 'door');
-    }
-
-    // SOUTH
-    if (southDoor && southDoor.destroy) {
-        southDoor.destroy();
-    }
-    if (paths.south) {
-        southDoor = scene.add.sprite(400, 383, 'door');
-        southDoor.setAngle(180);
-    }
-
-    // EAST
-    if (eastDoor && eastDoor.destroy) {
-        eastDoor.destroy();
-    }
-    if (paths.east) {
-        eastDoor = scene.add.sprite(734, 220, 'door');
-        eastDoor.setAngle(90);
-    }
-
-    // WEST
-    if (westDoor && westDoor.destroy) {
-        westDoor.destroy();
-    }
-    if (paths.west) {
-        westDoor = scene.add.sprite(66, 220, 'door');
-        westDoor.setAngle(-90);
-    }
 }

@@ -70,6 +70,7 @@ function populateGrid(grid, gridSize) {
       trap:{},
       cleared: false
   };
+  console.log(grid);
 }
 
 function checkGridBoundary(xposToCheck, yposToCheck){
@@ -86,6 +87,7 @@ function checkGridBoundary(xposToCheck, yposToCheck){
 
 function checkForPaths() {
   let room = getActiveCell();
+  console.log(room);
   let paths = {
     north: false,
     south: false,
