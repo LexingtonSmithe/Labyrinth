@@ -7,11 +7,11 @@ function buttonSetup(scene){
     buttonSouth.setInteractive();
     buttonSouth.on('pointerdown', () => moveToRoom('South', scene), this);
 
-    const buttonEast = scene.add.image(175, 500, 'east button');
+    const buttonEast = scene.add.image(190, 500, 'east button');
     buttonEast.setInteractive();
     buttonEast.on('pointerdown', () => moveToRoom('East', scene), this);
 
-    const buttonWest = scene.add.image(125, 500, 'west button');
+    const buttonWest = scene.add.image(110, 500, 'west button');
     buttonWest.setInteractive();
     buttonWest.on('pointerdown', () => moveToRoom('West', scene), this);
 
@@ -26,6 +26,10 @@ function buttonSetup(scene){
     const buttonHeal = scene.add.image(375, 500, 'heal button');
     buttonHeal.setInteractive();
     buttonHeal.on('pointerdown', () => drinkHealthPotion(), this);
+
+    const buttonInfo = scene.add.image(425, 500, 'info button');
+    buttonInfo.setInteractive();
+    buttonInfo.on('pointerdown', () => printCurrentInfo(), this);
 }
 
 function healthBarSetup(scene){

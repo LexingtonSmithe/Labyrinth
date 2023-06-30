@@ -131,6 +131,7 @@ function getNumberOfMonstersRemaining(){
     return monsters
 }
 
+
 function calculateKeyDropChance(){
     let monsters = getNumberOfMonstersRemaining();
     let chance = 0.2; // Initial chance starts at 20%

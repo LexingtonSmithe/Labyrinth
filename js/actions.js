@@ -1,3 +1,5 @@
+
+/// Movement
 function moveToRoom(direction, scene){
     console.log("Attempting to move... " + direction);
 
@@ -13,6 +15,7 @@ function moveToRoom(direction, scene){
                     updateTextLog("You venture North...");
                     fadeOutIn(scene).then(()=>{
                         updateActiveCell(currentRoom.xpos, currentRoom.ypos - 1);
+                        roomChange = true;
                     })
                 }
             break;
@@ -22,6 +25,7 @@ function moveToRoom(direction, scene){
                     updateTextLog("You venture South...");
                     fadeOutIn(scene).then(()=>{
                         updateActiveCell(currentRoom.xpos, currentRoom.ypos + 1);
+                        roomChange = true;
                     })
                 }
             break;
@@ -31,6 +35,7 @@ function moveToRoom(direction, scene){
                     updateTextLog("You venture East...");
                     fadeOutIn(scene).then(()=>{
                         updateActiveCell(currentRoom.xpos + 1, currentRoom.ypos);
+                        roomChange = true;
                     })
                 }
             break;
@@ -40,6 +45,7 @@ function moveToRoom(direction, scene){
                     updateTextLog("You venture West...");
                     fadeOutIn(scene).then(()=>{
                         updateActiveCell(currentRoom.xpos - 1, currentRoom.ypos);
+                        roomChange = true;
                     })
                 }
             break;
@@ -53,6 +59,9 @@ function moveToRoom(direction, scene){
         if(currentRoom.hasTrap == true) {
             updateTextLog("You cannot see a way around, you must disarm the trap.");
         }
+        if(currentRoom.hasLoot == true) {
+            updateTextLog("You don't want to leave this loot behind!.");
+        }
     }
 }
 
@@ -64,10 +73,6 @@ function updateActiveCell(xpos, ypos){
     gridMap[xpos][ypos].isActiveCell = true;
     console.log("Active Cell changed from: ["+ oldCell.xpos +"]["+ oldCell.ypos +"] ---> ["+ xpos +"]["+ ypos +"]");
     checkNewActiveCell();
-
-}
-
-function moveRooms(){
 
 }
 
@@ -109,6 +114,16 @@ function checkNewActiveCell(){
 
     }
 
+    if(cell.cleared){
+        updateTextLog("You think you've seen this room before...");
+        if(clearedRoomCounter > 2){
+            updateTextLog("You think you've seen this room before...");
+            clearedRoomCounter = 0;
+        } else {
+            clearedRoomCounter ++;
+        }
+    }
+
 }
 
 function updateCurrentEncounter(encounter){
@@ -118,7 +133,7 @@ function updateCurrentEncounter(encounter){
 
 }
 
-
+/// Actions
 function attackMonster(){
 
     let room = getActiveCell();
@@ -159,6 +174,8 @@ function attackMonster(){
             updateTextLog("The creature is dead!");
             gridMap[room.xpos][room.ypos].cleared = true;
             gridMap[room.xpos][room.ypos].monster = {};
+            player.roomsCleared ++;
+            player.monstersKilled ++;
             updateCurrentEncounter()
             monsterLootDrops(room);
 
@@ -199,6 +216,7 @@ function interactAction(){
             gridMap[room.xpos][room.ypos].hasLoot = false;
             gridMap[room.xpos][room.ypos].loot = {};
             gridMap[room.xpos][room.ypos].cleared = true;
+            player.roomsCleared ++;
             updateTextLog("You found a key now to find the exit");
             updateCurrentEncounter();
         } else {
@@ -209,6 +227,7 @@ function interactAction(){
             gridMap[room.xpos][room.ypos].hasLoot = false;
             gridMap[room.xpos][room.ypos].loot = {};
             gridMap[room.xpos][room.ypos].cleared = true;
+            player.roomsCleared ++;
 
         }
     } else if(room.hasTrap){
@@ -256,6 +275,7 @@ function interactAction(){
         gridMap[room.xpos][room.ypos].hasTrap = false;
         gridMap[room.xpos][room.ypos].trap = {};
         gridMap[room.xpos][room.ypos].cleared = true;
+        player.roomsCleared ++;
 
     } else if(room.isExit){
 
@@ -263,6 +283,7 @@ function interactAction(){
 
             updateTextLog("You've unlocked the exit!");
             gridMap[room.xpos][room.ypos].cleared = true;
+            player.roomsCleared ++;
             updateCurrentEncounter({spriteKey: 'exit unlocked'});
 
         } else {
@@ -286,6 +307,25 @@ function interactAction(){
 
 }
 
+function printCurrentInfo(){
+
+    let cleared = player.roomsCleared;
+    let monstersKilled = player.monstersKilled;
+    let potions = player.healthPotions;
+    let loot = calculatePlayerLootValue();
+
+    updateTextLog("You have slain " + monstersKilled + " monsters");
+    updateTextLog("You have explored " + cleared + " rooms");
+    updateTextLog("You have " + loot + "gp of loot");
+    if(player.hasKey){
+        updateTextLog("You have found the key to the exit");
+    }
+    updateTextLog("You have " + potions + " health potions remaining");
+
+}
+
+
+/// Action utils
 function monsterLootDrops(room){
 
     if(!player.hasKey) {

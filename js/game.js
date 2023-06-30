@@ -30,7 +30,9 @@ const player = {
     maxHealth: 20,
     healthPotions: 2,
     hasKey: false,
-    inventory: []
+    inventory: [],
+    roomsCleared: 0,
+    monstersKilled: 0
 }
 
 var healthBar
@@ -40,6 +42,7 @@ var roomChange = true;
 var fadeOverlay;
 var northDoor, southDoor, eastDoor, westDoor;
 var totalMonsters;
+var clearedRoomCounter = 0;
 
 
 function preload ()
@@ -61,6 +64,7 @@ function preload ()
     this.load.image('attack button', './assets/buttonAttack.png');
     this.load.image('heal button', './assets/buttonHeal.png');
     this.load.image('interact button', './assets/buttonInteract.png');
+    this.load.image('info button', './assets/buttonInfo.png');
     // Monsters
     this.load.image('goblin', './assets/monsterGoblin.png');
     this.load.image('skeleton', './assets/monsterSkeleton.png');
@@ -103,9 +107,6 @@ function create ()
     // Dynamic UI
     buttonSetup(this);
     healthBarSetup(this);
-
-
-
 
     // TEMP TO SEE WHERE ON THE CANVAS THINGS ARE.
     // this.label = this.add.text(48, 48, '(x, y)', { fontFamily: '"Monospace"', fill: '#000000'});
