@@ -24,17 +24,19 @@ var healthBar, northDoor, southDoor, eastDoor, westDoor;
 var displayText = "You have found yourself in a Labyrinth of my design. You must battle your way out to find which monster has the key to your escape..."
 
 const currentEncounter = {
-  present: false,
-  data: {}
+    present: false,
+    data: {}
 };
 var encounterSprite;
+var totalMonsters;
 
 
 const player = {
-  health: 10,
-  maxHealth: 10,
-  healthPotions: 2,
-  hasKey: false
+    health: 10,
+    maxHealth: 10,
+    healthPotions: 2,
+    hasKey: false,
+    inventory: []
 }
 
 function preload ()
@@ -45,6 +47,8 @@ function preload ()
     this.load.image('player', './assets/player.png');
     this.load.image('door', './assets/door.png');
     this.load.image('button', './assets/button.png');
+    this.load.image('exit unlocked', './assets/exitLadder.png');
+    this.load.image('exit locked', './assets/exitKeyhole.png');
     this.load.image('health bar', './assets/healthbar.png');
     // GUI
     this.load.image('north button', './assets/buttonNorth.png');
@@ -69,7 +73,7 @@ function preload ()
     this.load.image('ring', './assets/lootRing.png');
     this.load.image('scepter', './assets/lootScepter.png');
     this.load.image('crown', './assets/lootCrown.png');
-
+    this.load.image('key', './assets/lootKey.png');
 
 }
 
@@ -132,6 +136,7 @@ function create ()
     // SETUP THE GAME
 
     populateGrid(gridMap, gridSize);
+    totalMonsters = getNumberOfMonstersRemaining();
 
 
     this.textBox = this.add.text(485, 435, "Testing...", {fontFamily: '"Monospace"', fill: '#000000', wordWrap: { width : 280, useAdvancedWrap : true }});
@@ -145,21 +150,21 @@ function create ()
 function update()
 {
 
-  this.label.setText('(' + this.pointer.x + ', ' + this.pointer.y + ')');
+    this.label.setText('(' + this.pointer.x + ', ' + this.pointer.y + ')');
 
-  this.textBox.setText(displayText);
+    this.textBox.setText(displayText);
 
-  if (encounterSprite && encounterSprite.destroy) {
-    encounterSprite.destroy();
-  }
-  if(currentEncounter.present){
-    console.log(currentEncounter);
-    encounterSprite = this.add.sprite(300, 220, currentEncounter.data.spriteKey);
-  }
+    if (encounterSprite && encounterSprite.destroy) {
+        encounterSprite.destroy();
+    }
+    if(currentEncounter.present){
+        console.log(currentEncounter);
+        encounterSprite = this.add.sprite(300, 220, currentEncounter.data.spriteKey);
+    }
 
-  drawDoors()
+    drawDoors()
 
-  healthBar.scaleX = (player.health*10) / 100
+    healthBar.scaleX = (player.health*10) / 100
 
 }
 
