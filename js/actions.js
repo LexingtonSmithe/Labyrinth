@@ -14,8 +14,6 @@ function moveToRoom(direction){
                     updateTextLog("You venture North...");
                     updateActiveCell(currentRoom.xpos, currentRoom.ypos - 1);
 
-                } else {
-                    // Display message to player that they cannot go that way
                 }
             break;
 
@@ -25,8 +23,6 @@ function moveToRoom(direction){
                     updateTextLog("You venture South...");
                     updateActiveCell(currentRoom.xpos, currentRoom.ypos + 1);
 
-                } else {
-                    // Display message to player that they cannot go that way
                 }
             break;
 
@@ -36,8 +32,6 @@ function moveToRoom(direction){
                     updateTextLog("You venture East...");
                     updateActiveCell(currentRoom.xpos + 1, currentRoom.ypos);
 
-                } else {
-                    // Display message to player that they cannot go that way
                 }
             break;
 
@@ -47,8 +41,6 @@ function moveToRoom(direction){
                     updateTextLog("You venture West...");
                     updateActiveCell(currentRoom.xpos - 1, currentRoom.ypos);
 
-                } else {
-                    // Display message to player that they cannot go that way
                 }
             break;
 
@@ -335,11 +327,13 @@ function chooseLoot(){
 
 function calculateLootValue(){
 
-    let totalValue = 0
+    let totalValue = 0;
 
     for(let i=0; i < player.inventory.length; i++ ){
-        totalValue += player.inventory[i].value;
+        totalValue += player.inventory[i].worth;
     }
+
+    console.log("Loot: " + totalValue + "gp");
 
     return totalValue;
 }

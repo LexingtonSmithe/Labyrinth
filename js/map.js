@@ -53,9 +53,10 @@ function populateGrid(grid, gridSize) {
         cleared: true
     };
 
-  // TODO: Set the goal
-  let randX = randomInt(0, gridSize)
-  let randY = randomInt(0, gridSize)
+
+  let randX = randomInt(0, gridSize);
+  let randY = randomInt(0, gridSize);
+
   grid[randX][randY] = {
       xpos: randX,
       ypos: randY,
@@ -83,6 +84,38 @@ function checkGridBoundary(xposToCheck, yposToCheck){
     }
 }
 
+function checkForPaths() {
+  let room = getActiveCell();
+  let paths = {
+    north: false,
+    south: false,
+    east: false,
+    west: false
+  };
+
+  // Check if there is a path in the north direction
+  if (room.ypos > 0) {
+    paths.north = true;
+  }
+
+  // Check if there is a path in the south direction
+  if (room.ypos < gridSize - 1) {
+    paths.south = true;
+  }
+
+  // Check if there is a path in the east direction
+  if (room.xpos < gridSize - 1) {
+    paths.east = true;
+  }
+
+  // Check if there is a path in the west direction
+  if (room.xpos > 0) {
+    paths.west = true;
+  }
+
+  return paths;
+}
+
 function getNumberOfMonstersRemaining(){
     let monsters = 0;
     for (let x = 0; x < gridSize; x++) {
@@ -106,6 +139,6 @@ function calculateKeyDropChance(){
     } else {
       chance = 1; // 100% chance if no monsters remaining
     }
-    
+
     return Math.random() < chance;
 }

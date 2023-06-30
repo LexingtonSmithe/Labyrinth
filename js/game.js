@@ -20,24 +20,27 @@ const game = new Phaser.Game(config);
 const gridSize = 10;
 const gridMap = generateGrid(gridSize);
 const textLog = [];
-var healthBar, northDoor, southDoor, eastDoor, westDoor;
-var displayText = "You have found yourself in a Labyrinth of my design. You must battle your way out to find which monster has the key to your escape..."
-
 const currentEncounter = {
     present: false,
     data: {}
 };
-var encounterSprite;
-var totalMonsters;
-
 
 const player = {
-    health: 10,
-    maxHealth: 10,
+    health: 20,
+    maxHealth: 20,
     healthPotions: 2,
     hasKey: false,
     inventory: []
 }
+
+var healthBar
+var displayText = "You have been thrown into the Labyrinth. You must battle your way through, find which monster has the key to your escape..."
+var encounterSprite;
+var northDoor, southDoor, eastDoor, westDoor;
+var totalMonsters;
+
+
+
 
 function preload ()
 {
@@ -92,16 +95,6 @@ function create ()
 
     //this.add.image(625, 500, 'button');
     //this.input.setDefaultCursor('url(assets/input/cursors/blue.cur), pointer');
-
-    // TODO - MAKE THE DOORS ONLY APPEAR WHEN THERE IS A ROOM IN THAT DIRECTION TO MOVE TO
-    // Placeholder
-    northDoor = this.add.image(400, 66, 'door');
-    southDoor = this.add.image(400, 383, 'door');
-	southDoor.setAngle(180);
-	eastDoor = this.add.image(734, 220, 'door');
-	eastDoor.setAngle(90);
-	westDoor = this.add.image(66, 220, 'door');
-	westDoor.setAngle(-90)
 
     this.add.image(500, 220, 'player');
 
@@ -162,14 +155,49 @@ function update()
         encounterSprite = this.add.sprite(300, 220, currentEncounter.data.spriteKey);
     }
 
-    drawDoors()
+    drawDoors(this);
 
-    healthBar.scaleX = (player.health*10) / 100
+    healthBar.scaleX = (player.health / player.maxHealth);
 
 }
 
 
-function drawDoors() {
-	// TODO: Make it so the doors are only drawn when the player can move in that direction
+function drawDoors(scene) {
+  // TODO: Make it so the doors are only drawn when the player can move in that direction
+    let paths = checkForPaths();
+    console.log(paths);
+    // NORTH
+    if (northDoor && northDoor.destroy) {
+        northDoor.destroy();
+    }
+    if (paths.north) {
+        northDoor = scene.add.sprite(400, 66, 'door');
+    }
 
+    // SOUTH
+    if (southDoor && southDoor.destroy) {
+        southDoor.destroy();
+    }
+    if (paths.south) {
+        southDoor = scene.add.sprite(400, 383, 'door');
+        southDoor.setAngle(180);
+    }
+
+    // EAST
+    if (eastDoor && eastDoor.destroy) {
+        eastDoor.destroy();
+    }
+    if (paths.east) {
+        eastDoor = scene.add.sprite(734, 220, 'door');
+        eastDoor.setAngle(90);
+    }
+
+    // WEST
+    if (westDoor && westDoor.destroy) {
+        westDoor.destroy();
+    }
+    if (paths.west) {
+        westDoor = scene.add.sprite(66, 220, 'door');
+        westDoor.setAngle(-90);
+    }
 }
