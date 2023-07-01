@@ -19,7 +19,7 @@ const trapArray =
     spriteKey: 'arrows'
   },
   {
-    name: "Boudler Trap",
+    name: "Boulder Trap",
     chance_to_disarm: 40,
     damage_on_failure: 8,
     spriteKey: 'boulder'

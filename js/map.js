@@ -29,12 +29,12 @@ function populateGrid(grid, gridSize) {
 
           // Randomly assign game items to the cell
           let randomValue = Math.random();
-          if (randomValue < 0.33) {
-                gridMap[x][y].hasMonster = true; // 33% chance of having a monster
-          } else if (randomValue < 0.66) {
-                gridMap[x][y].hasLoot = true; // 33% chance of having loot
+          if (randomValue < 0.5) {
+                gridMap[x][y].hasMonster = true;
+          } else if (randomValue < 0.7) {
+                gridMap[x][y].hasLoot = true;
           } else {
-                gridMap[x][y].hasTrap = true; // 34% chance of having a trap
+                gridMap[x][y].hasTrap = true;
           }
         }
     }
@@ -70,24 +70,21 @@ function populateGrid(grid, gridSize) {
       trap:{},
       cleared: false
   };
-  console.log(grid);
+
 }
 
 function checkGridBoundary(xposToCheck, yposToCheck){
-    console.log("Checking grid boundary");
+
     if(xposToCheck < 0 || yposToCheck < 0 || xposToCheck >= gridSize || yposToCheck >= gridSize){
         updateTextLog("You cannot go this way...");
-        console.log("Player tried to move out of bounds")
         return false;
     } else {
-        console.log("All good");
         return true;
     }
 }
 
 function checkForPaths() {
   let room = getActiveCell();
-  console.log(room);
   let paths = {
     north: false,
     south: false,

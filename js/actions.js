@@ -1,10 +1,8 @@
 
 /// Movement
 function moveToRoom(direction, scene){
-    console.log("Attempting to move... " + direction);
 
     let currentRoom = getActiveCell();
-    console.log("Checking we've cleared the current room... " + currentRoom.cleared);
 
     if(currentRoom.cleared == true){
     // Change Room
@@ -67,11 +65,10 @@ function moveToRoom(direction, scene){
 
 function updateActiveCell(xpos, ypos){
 
-    console.log("Attempting to update active cell")
     let oldCell = getActiveCell();
     gridMap[oldCell.xpos][oldCell.ypos].isActiveCell = false;
     gridMap[xpos][ypos].isActiveCell = true;
-    console.log("Active Cell changed from: ["+ oldCell.xpos +"]["+ oldCell.ypos +"] ---> ["+ xpos +"]["+ ypos +"]");
+    //console.log("Active Cell changed from: ["+ oldCell.xpos +"]["+ oldCell.ypos +"] ---> ["+ xpos +"]["+ ypos +"]");
     checkNewActiveCell();
 
 }
@@ -144,11 +141,6 @@ function attackMonster(){
         let monsterDamage = randomInt(1, room.monster.attack);
         let monsterHealth = gridMap[room.xpos][room.ypos].monster.health
 
-        console.log("Player Damage " + playerDamage);
-        console.log("Player Health " + player.health);
-        console.log("Monster Damage " + monsterDamage);
-        console.log("Monster Health " + monsterHealth);
-
         if(monsterHealth > playerDamage){
 
             gridMap[room.xpos][room.ypos].monster.health -= playerDamage;
@@ -164,7 +156,7 @@ function attackMonster(){
                 player.health = 0;
                 updateTextLog("The monster attacks you for " + monsterDamage + " damage");
                 updateTextLog("You are dead...")
-                // TODO: Create a way to restart the game presenting the stats to the player of their run
+                showGameOver();
             }
 
         } else {
@@ -189,17 +181,21 @@ function attackMonster(){
 }
 
 function drinkHealthPotion(){
+    if(player.health > 0){
+        if(player.healthPotions > 0){
 
-    if(player.healthPotions > 0){
+            player.health = player.maxHealth;
+            player.healthPotions --;
+            updateTextLog("You drank a health potion.");
 
-        player.health = player.maxHealth;
-        player.healthPotions --;
-        updateTextLog("You drank a health potion.");
+        } else {
+
+            updateTextLog("You don't have any more potions.");
+
+        }
 
     } else {
-
-        updateTextLog("You don't have any more potions.");
-
+        updateTextLog("It's a bit late for that...");
     }
 
 }
@@ -264,10 +260,10 @@ function interactAction(){
             } else {
 
                 player.health = 0;
-                updateTextLog("You are dead...")
+                updateTextLog("You are dead...");
+                showGameOver();
 
             }
-
 
         }
 
@@ -296,6 +292,7 @@ function interactAction(){
 
             updateTextLog("You make your way up the ladder to freedom");
             updateTextLog("You found " + calculatePlayerLootValue() + "gp worth of loot");
+            showGameCompleted();
 
         }
 
@@ -312,15 +309,21 @@ function printCurrentInfo(){
     let cleared = player.roomsCleared;
     let monstersKilled = player.monstersKilled;
     let potions = player.healthPotions;
+    let health = player.health;
     let loot = calculatePlayerLootValue();
+
 
     updateTextLog("You have slain " + monstersKilled + " monsters");
     updateTextLog("You have explored " + cleared + " rooms");
     updateTextLog("You have " + loot + "gp of loot");
     if(player.hasKey){
         updateTextLog("You have found the key to the exit");
+    } else {
+        updateTextLog("You haven't found the key to the exit");
     }
+    updateTextLog("You have " + health + " health remaining");
     updateTextLog("You have " + potions + " health potions remaining");
+
 
 }
 
@@ -377,7 +380,7 @@ function calculatePlayerLootValue(){
         totalValue += player.inventory[i].worth;
     }
 
-    console.log("Loot: " + totalValue + "gp");
+    //console.log("Loot: " + totalValue + "gp");
 
     return totalValue;
 }

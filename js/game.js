@@ -36,10 +36,11 @@ const player = {
 }
 
 var healthBar
-var displayText = "You have been thrown into the Labyrinth. You must battle your way through, find which monster has the key to your escape..."
+var defaultText = "You have been thrown into the Labyrinth. You must battle your way through, find which monster has the key to your escape..."
+var displayText = "";
 var encounterSprite;
 var roomChange = true;
-var fadeOverlay;
+var fadeOverlay, overlay, messageText, replayButton;
 var northDoor, southDoor, eastDoor, westDoor;
 var totalMonsters;
 var clearedRoomCounter = 0;
@@ -49,6 +50,7 @@ function preload ()
 {
     // Basic
     this.load.image('background', './assets/background.png');
+    this.load.image('overlay', './assets/overlay.png');
     this.load.image('textBox', './assets/textBox.png');
     this.load.image('player', './assets/player.png');
     this.load.image('door', './assets/door.png');
@@ -68,7 +70,7 @@ function preload ()
     // Monsters
     this.load.image('goblin', './assets/monsterGoblin.png');
     this.load.image('skeleton', './assets/monsterSkeleton.png');
-    this.load.image('ooze', './assets/monsterSkeleton.png');
+    this.load.image('ooze', './assets/monsterOoze.png');
     this.load.image('troll', './assets/monsterTroll.png');
     // Traps
     this.load.image('spikes', './assets/trapSpikes.png');
@@ -98,11 +100,10 @@ function create ()
     this.add.image(500, 220, 'player');
     this.textBox = this.add.text(485, 435, "Testing...", {fontFamily: '"Monospace"', fill: '#000000', wordWrap: { width : 280, useAdvancedWrap : true }});
 
-    fadeOverlay = this.add.graphics();
-    fadeOverlay.fillStyle(0x000000, 1); // Set the color and opacity of the overlay
-    fadeOverlay.fillRect(0, 0, game.config.width, game.config.height); // Fill the entire screen
-    fadeOverlay.setDepth(999); // Ensure the overlay is rendered on top of other elements
-    fadeOverlay.alpha = 0;
+    createOverlay(this);
+    createReplayButton(this);
+    createMessageText(this);
+    createFadeInOutOverlay(this);
 
     // Dynamic UI
     buttonSetup(this);
@@ -131,4 +132,22 @@ function update()
 
     drawDoors(this);
 
+}
+
+function restartGame(){
+    populateGrid(gridMap, gridSize);
+
+    totalMonsters = getNumberOfMonstersRemaining();
+    clearedRoomCounter = 0;
+    roomChange = true;
+    player.health = player.maxHealth
+    player.healthPotions = 2
+    player.hasKey = false
+    player.inventory.splice(0);
+    player.roomsCleared = 0;
+    player.monstersKilled = 0;
+
+    textLog.splice(0);
+    currentEncounter.present = false;
+    currentEncounter.data = {};
 }

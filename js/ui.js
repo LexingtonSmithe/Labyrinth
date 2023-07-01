@@ -45,7 +45,6 @@ function healthBarSetup(scene){
 function drawDoors(scene) {
     if(roomChange == true){
         let paths = checkForPaths();
-        console.log(paths);
         // NORTH
         if (northDoor && northDoor.destroy) {
             northDoor.destroy();
@@ -107,4 +106,77 @@ function fadeOutIn(scene) {
       },
     });
   });
+}
+
+function createFadeInOutOverlay(scene){
+    fadeOverlay = scene.add.graphics();
+    fadeOverlay.fillStyle(0x000000, 1); // Set the color and opacity of the overlay
+    fadeOverlay.fillRect(0, 0, game.config.width, game.config.height); // Fill the entire screen
+    fadeOverlay.setDepth(999); // Ensure the overlay is rendered on top of other elements
+    fadeOverlay.alpha = 0;
+}
+
+
+function createOverlay(scene) {
+
+    overlay = scene.add.sprite(0, 0, 'overlay');
+    overlay.setOrigin(0, 0);
+    overlay.setDepth(10);
+    overlay.setAlpha(0.8);
+    overlay.setInteractive();
+    overlay.setVisible(false);
+
+}
+
+function createMessageText(scene){
+    messageText = scene.add.text(game.config.width / 2, game.config.height / 2 - 50, '', {
+        fontFamily: 'Arial',
+        fontSize: '32px',
+        color: '#ffffff',
+      }
+    );
+    messageText.setOrigin(0.5);
+    messageText.setDepth(11);
+    messageText.setVisible(false);
+
+}
+function createReplayButton(scene){
+
+    replayButton = scene.add.text(game.config.width / 2, game.config.height / 2 + 50, 'Replay',
+    {
+        fontFamily: 'Arial',
+        fontSize: '24px',
+        color: '#ffffff',
+        backgroundColor: '#333333',
+        padding: {
+          x: 10,
+          y: 5,
+        },
+      }
+    );
+    replayButton.setOrigin(0.5);
+    replayButton.setDepth(11);
+    replayButton.setInteractive();
+    replayButton.on('pointerdown', () => {
+        restartGame();
+        scene.scene.restart();
+    });
+    replayButton.setVisible(false);
+}
+
+
+function showGameOver() {
+    overlay.setVisible(true);
+    messageText.setVisible(true);
+    replayButton.setVisible(true);
+    messageText.setText('Game Over');
+    replayButton.setText('Replay');
+}
+
+function showGameCompleted() {
+    overlay.setVisible(true);
+    messageText.setVisible(true);
+    replayButton.setVisible(true);
+    messageText.setText('Congratulations!');
+    replayButton.setText('Play Again');
 }

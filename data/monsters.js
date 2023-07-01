@@ -2,26 +2,26 @@ const monsterArray =
 [
   {
     name: "Goblin",
-    health: 4,
+    health: 8,
     attack: 1,
     spriteKey: 'goblin'
   },
   {
     name: "Skeleton",
-    health: 6,
+    health: 12,
     attack: 2,
     spriteKey: 'skeleton'
   },
   {
     name: "Ooze",
-    health: 8,
+    health: 18,
     attack: 3,
     spriteKey: 'ooze'
   },
   {
     name: "Troll",
-    health: 10,
-    attack: 10,
+    health: 25,
+    attack: 5,
     spriteKey: 'troll'
   }
 ]
