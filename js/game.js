@@ -37,7 +37,7 @@ const player = {
 
 var healthBar
 var defaultText = "You have been thrown into the Labyrinth. You must battle your way through, find which monster has the key to your escape..."
-var displayText = "";
+var displayText = defaultText;
 var encounterSprite;
 var roomChange = true;
 var fadeOverlay, overlay, messageText, replayButton;
@@ -148,6 +148,7 @@ function restartGame(){
     player.monstersKilled = 0;
 
     textLog.splice(0);
+    displayText = defaultText;
     currentEncounter.present = false;
     currentEncounter.data = {};
 }

@@ -2,10 +2,11 @@
 
 npm install
 
-install server
+due to recent Chrome updates it's not possible to just launch by opening the index.html file and instead needs to be served.
 
-npm install -g http-server
+##to install server
+- npm install -g http-server
 
-run
-
-call 'http-server' in root folder default ( 127.0.0.1:8080 )
+##to run
+- call 'http-server' in root folder
+- open browser to localhost default ( 127.0.0.1:8080 )
