@@ -360,6 +360,8 @@ function monsterLootDrops(room){
 
 function chooseLoot(){
 
+    let room = getActiveCell();
+
     if(randomInt(1, 100) < 25){ // 25% chance of loot
 
         let loot = chooseFromArray(lootArray);

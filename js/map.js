@@ -68,7 +68,7 @@ function populateGrid(grid, gridSize) {
       loot: {},
       hasTrap: false,
       trap:{},
-      cleared: false
+      cleared: true
   };
 
 }

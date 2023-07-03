@@ -151,4 +151,5 @@ function restartGame(){
     displayText = defaultText;
     currentEncounter.present = false;
     currentEncounter.data = {};
+    updateCurrentEncounter();
 }
